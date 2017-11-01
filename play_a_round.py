@@ -23,6 +23,7 @@ NOTES:
         --> how would value of flush be accounted for?
         --> how do you what hand they have?
     - are all imports being used
+    - ** need check to ensure same card is not used more than once in a game
 '''
 
 FACE_VALUE_DICT = {
@@ -62,13 +63,39 @@ class Game(object):
         # card(s) that give most value ie. 3 3s in a full house
 
         # ** for a full house probably want to display full hand
+        def getCardValue(card):
+            return int(card[:-1])
+
+        # rank, sorted_hand; 'z' is the highest rank and 'a' is the lowest.
+        best_hand = ('a', ['1J'])  # used named tuple!!!
+
         for hand in all_hands:
-            sorted_hand = sorted(hand, key=int(x[:-1]), reverse=True) # SORTING NOT WORKING!!!
-            print "{} --> {}".format(hand, sorted_hand)
-            # flush = hand[0][1] and hand[1][1] and hand[2][1] and hand[3][1] and hand[4][1]
-            # straight = [int(hand[idx-1][:-1]) - int(val[:-1]) for idx, val in enumerate(hand[1:])]
-            # print "{} -- {}".format(hand, straight)
+            sorted_hand = sorted(hand, key=getCardValue, reverse=True)
+            
+            flush = hand[0][1] and hand[1][1] and hand[2][1] and hand[3][1] and hand[4][1]
+            regular_straight = sum([int(sorted_hand[idx][:-1]) - int(val[:-1]) for idx, val in enumerate(sorted_hand[1:])]) == 4
+            bicycle_straight = sum([0 if x == int(sorted_hand[idx][:-1]) else 1 for idx, x in enumerate([14, 5, 4, 3, 2])]) == 0
+            straight = regular_straight or bicycle_straight
+
+            if straight and flush:
+                if best_hand[0] < 'z':
+                    best_hand = ('z', sorted_hand)
+                elif best_hand[0] == 'z' and int(best_hand[1][0][:-1]) < int(sorted_hand[0][:-1]):
+                    best_hand = ('z', sorted_hand)
+
+            print "{} -- {}".format(sorted_hand, bicycle_straight)
         # if straight_flush:
+        ''' Use letters to identify hand rank this allows
+        categorization of hands without of miss incorrect
+        categorization because of high card
+        
+        high card will depend on hand type:
+            - pair: check pair value then recursive high hand
+            - straight single high card
+            - two pair check higher pair, then lower pair, then
+            recursive hand
+            - etc.
+        '''
             # pass
         # elif four_of_a_kind:
             # pass
@@ -114,8 +141,8 @@ class Player(object):
         self.name = name
         self.hand = [card1, card2]
         self.hand_type = ""
-        self.hand_value = 0
-        self.high_card = ""
+        self.hand_rank = ""
+        self.high_card = 0
         self.flush = False
         self.straight = False
         self.pairs = defaultdict(int)
@@ -144,13 +171,16 @@ if __name__ == "__main__":
     #TESTING number_of_players = raw_input("How many players do we have? ")
     #TESTING board = raw_input("Enter the board: ")
 
-    number_of_players = "3"
+    # CATCH RAISED EXCEPTIONS HERE, PRINT, AND EXIT GRACEFULLY
+
+    number_of_players = "4"
     board = "2C 3D 4S 9H JH"
+    player0 = Player("Mike 5S AD")
     player1 = Player("Rob QH QD")
     player2 = Player("Bob 2C 2S")
     player3 = Player("Buns 7D 8C")
 
-    players = [player1, player2, player3]
+    players = [player0, player1, player2, player3]
 
     # players = []
     # for i in range(int(number_of_players)):
