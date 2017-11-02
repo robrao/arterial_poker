@@ -10,6 +10,8 @@ NOTES:
         --> need check to ensure same card is not used more than once in a game
     - Gamer winner / Tie breaker logic
         --> BEST HAND logic can be reused only needs method to recursively check high card if necessary
+        --> Handle ties
+        --> hand may need to be its own class, then might be a way to compare objects?
     - game output
     - function docstring
     - CATCH RAISED EXCEPTIONS in main, PRINT, AND EXIT GRACEFULLY
@@ -31,6 +33,37 @@ class Game(object):
         self.board = self.__parseBoard__(board)
         self.num_players = number_of_players
         self.players = players
+
+    def recursive_high_card_check(self, hand1, hand2):
+        # Since recursive now need verify hand length before checking
+        # needs tests asap.
+        if "Straight" in hand1[1]:
+            # WHAT ABOUT TIES??
+            if hand1[2][0] < hand2[2][0]:
+                return True
+            elif hand1[2][0] == hand2[2][0]:
+                pass
+            else:
+                return False
+        elif "Flush" == hand1[1] or "High Card" == hand1[1]:
+            if hand1[2][0] < hand2[2][0]:
+                return True
+            elif hand1[2][0] == hand2[2][0]:
+                hand1[2].pop(0)
+                hand2[2].pop(0)
+                return self.recursive_high_card_check(hand1, hand2)
+            else:
+                return False
+        elif "Full House" == hand1[1]:
+            if hand1[2][2][0][0] < hand2[2][2][0][0]:  # might need class for a hand
+                return True
+            else:
+                return False
+
+        # PAIRS -- check length of pair list and if shorted than expected means
+        # pair has already been checked, so check high cards. This might result
+        # in redundant checks, because pair value will be checked again, but its
+        # negligible because only one check and it has already tied so no effect
 
     def best_hand(self, all_hands):
         '''Find best hand it list of possible hands
@@ -182,4 +215,5 @@ if __name__ == "__main__":
         player.hand = game.best_hand(all_possible_hands)
 
     print players[0].hand
+    print players[2].hand
         
