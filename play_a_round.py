@@ -1,29 +1,19 @@
 import itertools
 
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 '''
 NOTES:
     - a lot input validation required
         --> need at least two players
         --> no card values that are not in deck
-    - best method to find hand
-    - best method to decipher card > 9
-        --> probably best to just use regex looking for K etc
-    - best method to determine winner
-        --> assign point system to hands; eg. Royal Flush = 15
-        --> if tie in type of hand check high card
-        --> also need to be aware if board has high card and its a draw
-    - best method to find hard
-        --> probably regex: may not work the best...
-        how to search for straight, need atleast 5 cards/matches...
-    - regex to ignore case
-    - Best speed would need a lookup table which would require 7936 entries...
-    - Prime number idea makes sense
-        --> how would value of flush be accounted for?
-        --> how do you what hand they have?
-    - are all imports being used
-    - ** need check to ensure same card is not used more than once in a game
+        --> need check to ensure same card is not used more than once in a game
+    - Gamer winner / Tie breaker logic
+        --> BEST HAND logic can be reused only needs method to recursively check high card if necessary
+    - game output
+    - function docstring
+    - CATCH RAISED EXCEPTIONS in main, PRINT, AND EXIT GRACEFULLY
+    - README.md?
 '''
 
 FACE_VALUE_DICT = {
@@ -36,9 +26,6 @@ FACE_VALUE_DICT = {
 
 
 class Game(object):
-    flush_regex = ""
-    straight_regex = ""
-    pair_count_regex = ""
 
     def __init__(self, board, number_of_players, players):
         self.board = self.__parseBoard__(board)
@@ -53,68 +40,67 @@ class Game(object):
         to figure out this bonus for high card more specifically...
 
         Add proper doc string!!!
+
+        rank, sorted_hand; 'z' is the highest rank and 'a' is the lowest.
         '''
 
-        # alot of these are doing redundant checks
-        # each assigns point value, hand_type, and
-        # calls function to find high card
-        # high card function adds additonal value
-        # high card is not necessairly highest card, but
-        # card(s) that give most value ie. 3 3s in a full house
-
-        # ** for a full house probably want to display full hand
-        def getCardValue(card):
-            return int(card[:-1])
-
-        # rank, sorted_hand; 'z' is the highest rank and 'a' is the lowest.
-        best_hand = ('a', ['1J'])  # used named tuple!!!
+        best_hand = ('a')
 
         for hand in all_hands:
-            sorted_hand = sorted(hand, key=getCardValue, reverse=True)
-            
-            flush = hand[0][1] and hand[1][1] and hand[2][1] and hand[3][1] and hand[4][1]
-            regular_straight = sum([int(sorted_hand[idx][:-1]) - int(val[:-1]) for idx, val in enumerate(sorted_hand[1:])]) == 4
-            bicycle_straight = sum([0 if x == int(sorted_hand[idx][:-1]) else 1 for idx, x in enumerate([14, 5, 4, 3, 2])]) == 0
+            no_suit_hand = [int(x[:-1]) for x in hand]
+            sorted_hand = sorted(no_suit_hand,  reverse=True)
+
+            flush = hand[0][-1] == hand[1][-1] == hand[2][-1] == hand[3][-1] == hand[4][-1]
+            regular_straight = sum([sorted_hand[idx] - val for idx, val in enumerate(sorted_hand[1:])]) == 4
+            bicycle_straight = sum([0 if x == sorted_hand[idx] else 1 for idx, x in enumerate([14, 5, 4, 3, 2])]) == 0
             straight = regular_straight or bicycle_straight
 
             if straight and flush:
                 if best_hand[0] < 'z':
-                    best_hand = ('z', sorted_hand)
-                elif best_hand[0] == 'z' and int(best_hand[1][0][:-1]) < int(sorted_hand[0][:-1]):
-                    best_hand = ('z', sorted_hand)
+                    best_hand = ('z', "Straight Flush", sorted_hand)
+                elif best_hand[0] == 'z' and best_hand[1][0] < sorted_hand[0]:
+                    best_hand = ('z', "Straight Flush", sorted_hand)
+            elif flush:
+                if best_hand[0] < 'w':
+                    best_hand = ('w', "Flush", sorted_hand)
+                elif best_hand[0] == 'w' and best_hand[1][0] < sorted_hand[0]:
+                    best_hand = ('w', "Flush", sorted_hand)
+            elif straight:
+                if best_hand[0] < 'v':
+                    best_hand = ('v', "Straight", sorted_hand)
+                elif best_hand[0] == 'v' and best_hand[1][0] < sorted_hand[0]:
+                    best_hand = ('v', "Straight", sorted_hand)
+            else:
+                pairs = Counter(sorted_hand).items()
+                sorted_pairs = sorted(pairs, reverse=True, key=lambda x: x[1])
 
-            print "{} -- {}".format(sorted_hand, bicycle_straight)
-        # if straight_flush:
-        ''' Use letters to identify hand rank this allows
-        categorization of hands without of miss incorrect
-        categorization because of high card
-        
-        high card will depend on hand type:
-            - pair: check pair value then recursive high hand
-            - straight single high card
-            - two pair check higher pair, then lower pair, then
-            recursive hand
-            - etc.
-        '''
-            # pass
-        # elif four_of_a_kind:
-            # pass
-        # elif full_house:
-            # pass
-        # elif flush:
-            # pass
-        # elif straight:
-            # pass
-        # elif three_pair:
-            # pass
-        # elif two_pair:
-            # pass
-        # elif pair:
-            # pass
-        # else:
-            # #high card
-            # pass
-        pass
+                if sorted_pairs[0][1] == 4:
+                    if best_hand[0] < 'y':
+                        best_hand = ('y', "Four of a kind", sorted_pairs)
+                    elif best_hand == 'y' and best_hand[1][0] < sorted_pairs[0][0]:
+                        best_hand = ('y', "Four of a kind", sorted_pairs)
+                elif sorted_pairs[0][1] == 3 and sorted_pairs[1][1] == 2:
+                    if best_hand[0] < 'x':
+                        best_hand = ('x', "Full House", sorted_pairs)
+                    elif best_hand == 'x' and best_hand[1][0] < sorted_pairs[0][0]:
+                        best_hand = ('x', "Full House", sorted_pairs)
+                elif sorted_pairs[0][1] == 3:
+                    if best_hand[0] < 'u':
+                        best_hand = ('u', "Three of a kind", sorted_pairs, sorted_hand)
+                    elif best_hand == 'u' and best_hand[1][0] < sorted_pairs[0][0]:
+                        best_hand = ('u', "Three of a kind", sorted_pairs, sorted_hand)
+                elif sorted_pairs[0][1] == 2:
+                    if best_hand[0] < 't':
+                        best_hand = ('t', "A Pair", sorted_pairs, sorted_hand)
+                    elif best_hand == 't' and best_hand[1][0] < sorted_pairs[0][0]:
+                        best_hand = ('t', "A Pair", sorted_pairs, sorted_hand)
+                else:
+                    if best_hand[0] < 's':
+                        best_hand = ('s', "High Card", sorted_hand)
+                    elif best_hand == 's' and best_hand[1][0] < sorted_pairs[0][0]:
+                        best_hand = ('s', "High Card", sorted_hand)
+
+        return best_hand
 
     def __parseBoard__(self, data):
         try:
@@ -171,13 +157,11 @@ if __name__ == "__main__":
     #TESTING number_of_players = raw_input("How many players do we have? ")
     #TESTING board = raw_input("Enter the board: ")
 
-    # CATCH RAISED EXCEPTIONS HERE, PRINT, AND EXIT GRACEFULLY
-
     number_of_players = "4"
     board = "2C 3D 4S 9H JH"
-    player0 = Player("Mike 5S AD")
+    player2 = Player("Mike 5S AD")
     player1 = Player("Rob QH QD")
-    player2 = Player("Bob 2C 2S")
+    player0 = Player("Bob 2C 2S")
     player3 = Player("Buns 7D 8C")
 
     players = [player0, player1, player2, player3]
@@ -197,7 +181,5 @@ if __name__ == "__main__":
 
         player.hand = game.best_hand(all_possible_hands)
 
-        break
-
-    # now looking over each players best hand find winner
+    print players[0].hand
         
