@@ -18,6 +18,9 @@ NOTES:
     - CATCH RAISED EXCEPTIONS in main, PRINT, AND EXIT GRACEFULLY
     - how to deal with a tie? both rank tie and full tie
     - README.md?
+
+    ** append high card to a list and display at end to show
+    how won the hand?
 '''
 
 FACE_VALUE_DICT = {
@@ -165,6 +168,7 @@ class Game(object):
 
         eg. if the hand is "Two Pair" it will have a list sorting
         the pairs by value and a list sorting all cards by value.
+
         """
         no_suit_hand = [int(x[:-1]) for x in hand]
         sorted_hand = sorted(no_suit_hand,  reverse=True)
@@ -260,12 +264,17 @@ class Game(object):
 
             if first_half[idx1].hand_rank < second_half[idx2].hand_rank:
                 res = True
-            elif first_half[idx1].hand_rank < second_half[idx2].hand_rank:
+            elif first_half[idx1].hand_rank == second_half[idx2].hand_rank:
                 res = self.recursive_high_card_check(first_half[idx1], second_half[idx2])
             else:
                 res = False
 
             if res == "split pot":
+                first_half[idx1].split = True
+                second_half[idx2].split = True
+                ordered_list.append(first_half[idx1])
+                idx1 += 1
+            elif res == "split pot":
                 ordered_list.append(first_half[idx1])
                 ordered_list.append(second_half[idx2])
                 idx1 += 1
@@ -279,6 +288,18 @@ class Game(object):
 
         return ordered_list
 
+    def display_results(self, winner_list):
+        # check for split pot, and amount how many
+        split_count = 0
+        for idx, w in enumerate(winner_list):
+            if idx == 0 or not split_count == 0:
+                split_count += 1 if w.split else break
+
+        if split_count > 0:
+            print "We have a split pot"
+            for i in range(split_count):
+                tied = ""
+
 
 class Player(object):
 
@@ -290,10 +311,7 @@ class Player(object):
         self.hand_rank = ""
         self.high_card_sorted_list = []
         self.pair_sorted_list = []
-        self.flush = False
-        self.straight = False
-        self.pairs = defaultdict(int)
-        self.high_card = None
+        self.split = False
 
     def __str__(self):
         return "{} {}".format(self.name, self.hand_type)
@@ -324,12 +342,13 @@ if __name__ == "__main__":
     number_of_players = "4"
     board = "2C 3D 4S 9H JH"
     player2 = Player("Mike 5S AD")
-    player1 = Player("Rob QH QD")
-    # player1 = Player("Rob 5H AC")
+    # player1 = Player("Rob QH QD")
+    player1 = Player("Rob 5H AC")
     player0 = Player("Bob 2C 2S")
     player3 = Player("Buns 7D 8C")
+    player4 = Player("Gisele 9D 10H")
 
-    players = [player0, player1, player2, player3]
+    players = [player0, player1, player2, player3, player4]
 
     # players = []
     # for i in range(int(number_of_players)):
@@ -343,11 +362,8 @@ if __name__ == "__main__":
     for player in players:
         game.best_hand(player)
 
-
     # for player in players:
         # print player
 
     winner_list = game.find_winner(players)
-
-    for w in winner_list:
-        print w
+    game.display_results(winner_list)
