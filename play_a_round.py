@@ -9,19 +9,11 @@ NOTES:
         --> no card values that are not in deck
         --> no card suits that are not in deck
         --> need check to ensure same card is not used more than once in a game
-    - Gamer winner / Tie breaker logic
-        --> BEST HAND logic can be reused only needs method to recursively check high card if necessary
-        --> Handle ties
-        --> hand may need to be its own class, then might be a way to compare objects?
-    - game output
     - function docstring
     - CATCH RAISED EXCEPTIONS in main, PRINT, AND EXIT GRACEFULLY
     - how to deal with a tie? both rank tie and full tie
     - README.md?
-    - Docstrings
-
-    ** append high card to a list and display at end to show
-    how won the hand?
+    - Tests
 '''
 
 FACE_VALUE_DICT = {
@@ -32,12 +24,19 @@ FACE_VALUE_DICT = {
         'T': "10",
         }
 
+VALUE_FACE_DICT = {
+        14: "Ace",
+        13: "King",
+        12: "Queen",
+        11: "Jack",
+        10: "10",
+        }
+
 
 class Game(object):
 
-    def __init__(self, board, number_of_players, players):
+    def __init__(self, board, players):
         self.board = self.__parseBoard__(board)
-        self.num_players = number_of_players
         self.players = players
 
     def __parseBoard__(self, data):
@@ -155,37 +154,59 @@ class Game(object):
 
         if straight and flush:
             if sorted_hand[0] == 14:
-                label = "{} Royal Flush".format(sorted_hand[0])
+                label = "A Royal Flush"
             else:
-                label = "{} High Straight Flush".format(sorted_hand[0])
+                val = sorted_hand[0]
+                face_val = VALUE_FACE_DICT.get(val, val)
+                label = "{} High Straight Flush".format(face_val)
             hand_value = ['z', label, [], sorted_hand]
         elif flush:
-            label = "{} High Flush".format(sorted_hand[0])
+            val = sorted_hand[0]
+            face_val = VALUE_FACE_DICT.get(val, val)
+            label = "{} High Flush".format(face_val)
             hand_value = ['w', label, [], sorted_hand]
         elif straight:
-            label = "{} High Straight".format(sorted_hand[0])
+            val = sorted_hand[0]
+            face_val = VALUE_FACE_DICT.get(val, val)
+            label = "{} High Straight".format(face_val)
             hand_value = ['v', label, [], sorted_hand]
         else:
             pairs = Counter(sorted_hand).items()
             sorted_pairs = sorted(pairs, reverse=True, key=lambda x: x[1])
 
             if sorted_pairs[0][1] == 4:
-                label = "Four {}'s".format(sorted_pairs[0][0])
+                pair = sorted_pairs[0][0]
+                face_val = VALUE_FACE_DICT.get(pair, pair)
+                label = "Four {}'s".format(face_val)
                 hand_value = ['y', label, sorted_pairs]
             elif sorted_pairs[0][1] == 3 and sorted_pairs[1][1] == 2:
-                label = "Full House: {}'s over {}".format(sorted_pairs[0][0], sorted_pairs[1][0])
+                pair1 = sorted_pairs[0][0]
+                pair2 = sorted_pairs[1][0]
+                face_val1 = VALUE_FACE_DICT.get(pair1, pair1)
+                face_val2 = VALUE_FACE_DICT.get(pair2, pair2)
+                label = "Full House: {}'s over {}".format(face_val1, face_val2)
                 hand_value = ['x', label, sorted_pairs]
             elif sorted_pairs[0][1] == 3:
-                label = "Three {}'s".format(sorted_pairs[0][0])
+                pair = sorted_pairs[0][0]
+                face_val = VALUE_FACE_DICT.get(pair, pair)
+                label = "Three {}'s".format(face_val)
                 hand_value = ['u', label, sorted_pairs, sorted_hand]
             elif sorted_pairs[0][1] == 2 and sorted_pairs[1][1] == 2:
-                label = "Two Pairs: {}'s and {}'s".format(sorted_pairs[0][0], sorted_pairs[1][0])
+                pair1 = sorted_pairs[0][0]
+                pair2 = sorted_pairs[1][0]
+                face_val1 = VALUE_FACE_DICT.get(pair1, pair1)
+                face_val2 = VALUE_FACE_DICT.get(pair2, pair2)
+                label = "Two Pairs: {}'s and {}'s".format(face_val1, face_val2)
                 hand_value = ['t', label, sorted_pairs, sorted_hand]
             elif sorted_pairs[0][1] == 2:
-                label = "A Pair of {}'s".format(sorted_pairs[0][0])
+                pair = sorted_pairs[0][0]
+                face_val = VALUE_FACE_DICT.get(pair, pair)
+                label = "A Pair of {}'s".format(face_val)
                 hand_value = ['s', label, sorted_pairs, sorted_hand]
             else:
-                label = "{} High".format(sorted_hand[0])
+                high_card = sorted_hand[0]
+                face_val = VALUE_FACE_DICT.get(high_card, high_card)
+                label = "{} High".format(face_val)
                 hand_value = ['r', label, [], sorted_hand]
 
         return hand_value
@@ -278,7 +299,8 @@ class Game(object):
             output = "{} {} {}".format(position, w.name, w.hand_type)
 
             if w.kicker:
-                output = output + " with a {} kicker".format(w.kicker)
+                face = VALUE_FACE_DICT.get(w.kicker, w.kicker)
+                output = output + " with a {} kicker".format(face)
 
             print output
 
@@ -321,8 +343,11 @@ class Player(object):
         return name, updated_cards[0], updated_cards[1]
 
 if __name__ == "__main__":
-    # need to validate all input
-    #TESTING number_of_players = raw_input("How many players do we have? ")
+    try:
+        number_of_players = int(raw_input("How many players do we have? ").strip())
+    except ValueError as err:
+        print "Ensure that the input was a number"
+
     #TESTING board = raw_input("Enter the board: ")
 
     number_of_players = "4"
@@ -343,7 +368,7 @@ if __name__ == "__main__":
         # player_input = raw_input("Player {}: ".format(i+1))
         # players.append(Player(player_input))
 
-    game = Game(board, number_of_players, players)
+    game = Game(board, players)
 
     # each player goes over board and finds best hand
     # https://docs.python.org/2/library/itertools.html#itertools.combinations
