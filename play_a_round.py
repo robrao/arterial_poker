@@ -342,11 +342,13 @@ class Player(object):
 
         return name, updated_cards[0], updated_cards[1]
 
-if __name__ == "__main__":
+
+def main():
     try:
         number_of_players = int(raw_input("How many players do we have? ").strip())
     except ValueError as err:
         print "Ensure that the input was a number"
+        return
 
     #TESTING board = raw_input("Enter the board: ")
 
@@ -379,3 +381,6 @@ if __name__ == "__main__":
         # print player
     winner_list = game.find_winner(players)
     game.display_results(winner_list)
+
+if __name__ == "__main__":
+    main()
