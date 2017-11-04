@@ -152,12 +152,6 @@ class Game(object):
                 else:
                     return False
 
-
-        # PAIRS -- check length of pair list and if shorted than expected means
-        # pair has already been checked, so check high cards. This might result
-        # in redundant checks, because pair value will be checked again, but its
-        # negligible because only one check and it has already tied so no effect
-
     def find_hand_rank_and_high_card(self, hand):
         """Discover hand type and return rank and high card
 
@@ -293,12 +287,19 @@ class Game(object):
         split_count = 0
         for idx, w in enumerate(winner_list):
             if idx == 0 or not split_count == 0:
-                split_count += 1 if w.split else break
+                if w.split:
+                    split_count += 1
+                else:
+                    break
 
         if split_count > 0:
-            print "We have a split pot"
-            for i in range(split_count):
-                tied = ""
+            print "We have a split pot!"
+            for w in winner_list[:split_count]:
+                print w.name
+            print "with a {}".format(w.hand_type)
+
+        for w in winner_list[split_count:]:
+            print "{} {}".format(w.name, w.hand_type)
 
 
 class Player(object):
