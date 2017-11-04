@@ -6,13 +6,10 @@ from collections import Counter
 '''
 NOTES:
     - a lot input validation required
-        --> need at least two players
         --> no card values that are not in deck
         --> no card suits that are not in deck
-        --> need check to ensure same card is not used more than once in a game
     - function docstring
     - CATCH RAISED EXCEPTIONS in main, PRINT, AND EXIT GRACEFULLY
-    - how to deal with a tie? both rank tie and full tie
     - README.md?
     - Tests
 '''
@@ -34,6 +31,7 @@ VALUE_FACE_DICT = {
         }
 
 UNIQUE_CARD_COUNT = Counter()
+
 
 class Game(object):
 
