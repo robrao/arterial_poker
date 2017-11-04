@@ -1,5 +1,6 @@
 import itertools
 
+from copy import deepcopy
 from collections import Counter
 
 '''
@@ -32,6 +33,7 @@ VALUE_FACE_DICT = {
         10: "10",
         }
 
+UNIQUE_CARD_COUNT = Counter()
 
 class Game(object):
 
@@ -40,19 +42,22 @@ class Game(object):
         self.players = players
 
     def __parseBoard__(self, data):
-        try:
-            updated_cards = []
-            cards = data.split(" ")
+        updated_cards = []
+        cards = data.split(" ")
 
-            for card in cards:
-                val = FACE_VALUE_DICT.get(card[0], False)
-                if val:
-                    card = card.replace(card[0], val)
-                updated_cards.append(card)
+        for card in cards:
+            if UNIQUE_CARD_COUNT[card] > 1:
+                msg = "The same card has been played twice: {}.".format(card)
+                raise ValueError(msg)
+            else:
+                UNIQUE_CARD_COUNT[card] += 1
+
+            val = FACE_VALUE_DICT.get(card[0], False)
+            if val:
+                card = card.replace(card[0], val)
+            updated_cards.append(card)
             # validate cards are as expected len 2 one char
             # one string, or two string means 10 or up
-        except Exception as e:
-            raise("The dealer is not playing by the rules!")
 
         return updated_cards
 
@@ -225,7 +230,7 @@ class Game(object):
 
         if player.hand_rank == "":
             player.hand_rank = "a"
-            temp = Player("temp 2D 2H")  # random initialization; will be over written
+            temp = deepcopy(player)
             players_cards = self.board + player.hand
             all_hands = itertools.combinations(players_cards, 5)
 
@@ -325,20 +330,22 @@ class Player(object):
         return "{} {}".format(self.name, self.hand_type)
 
     def __parsePlayerData__(self, data):
-        try:
-            updated_cards = []
-            name, card1, card2 = data.split(" ")
+        updated_cards = []
+        name, card1, card2 = data.split(" ")
 
-            for card in [card1, card2]:
-                val = FACE_VALUE_DICT.get(card[0], False)
-                if val:
-                    card = card.replace(card[0], val)
-                updated_cards.append(card)
+        for card in [card1, card2]:
+            if UNIQUE_CARD_COUNT[card] > 1:
+                msg = "The same card has been played twice: {}.".format(card)
+                raise ValueError(msg)
+            else:
+                UNIQUE_CARD_COUNT[card] += 1
+
+            val = FACE_VALUE_DICT.get(card[0], False)
+            if val:
+                card = card.replace(card[0], val)
+            updated_cards.append(card)
             # validate cards are as expected len 2 one char
             # one string, or two string means 10 or up
-        except Exception as err:
-            msg = "Someone is not playing by the rules!\n{}".format(err)
-            raise(msg)
 
         return name, updated_cards[0], updated_cards[1]
 
@@ -347,30 +354,30 @@ def main():
     try:
         number_of_players = int(raw_input("How many players do we have? ").strip())
     except ValueError as err:
-        print "Ensure that the input was a number"
+        print "** Ensure that the input was a number **"
         return
 
-    #TESTING board = raw_input("Enter the board: ")
+    if number_of_players < 2:
+        print "** It takes atleast two players to play. **"
+        return
 
-    number_of_players = "4"
-    board = "2C 3D 4S 9H JH"
-    # player2 = Player("Mike 9S AD")
-    player2 = Player("Mike 9S 8D")
-    # player1 = Player("Rob QH QD")
-    player1 = Player("Rob 5H AC")
-    player0 = Player("Bob 2C 2S")
-    player3 = Player("Buns 7D 8C")
-    player4 = Player("Gisele 9D 10H")
+    #TESTING board = raw_input("Enter the board: ").strip().upper()
 
-    players = [player0, player1, player2, player3, player4]
-    # players = [player2, player4]
+    number_of_players = "5"
+    board = "6H 3D 4S 9H JH"
+    player_inputs = ["Mike 9S 2D", "Rob 5H JC", "Bob 2C 2S", "Buns 7D 8C", "Gisele 9D 10H"]
 
-    # players = []
-    # for i in range(int(number_of_players)):
-        # player_input = raw_input("Player {}: ".format(i+1))
-        # players.append(Player(player_input))
+    players = []
+    try:
+        for i in range(int(number_of_players)):
+            # player_input = raw_input("Player {}: ".format(i+1)).strip().upper()
+            player_input = player_inputs[i]
+            players.append(Player(player_input))
 
-    game = Game(board, players)
+        game = Game(board, players)
+    except Exception as err:
+        print err
+        return
 
     # each player goes over board and finds best hand
     # https://docs.python.org/2/library/itertools.html#itertools.combinations
