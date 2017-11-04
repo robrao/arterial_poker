@@ -67,7 +67,7 @@ class Game(object):
                 return False
             else:
                 return "split pot"
-        elif "w" == p1.hand_rank or "r" == p1.hand_rank:  # Full House & High card
+        elif p1.hand_rank in ["w", "r"]:  # Full House or High card
             for idx, card1 in enumerate(p1.high_card_sorted_list):
                 p1.kicker = p1.high_card_sorted_list[0]
                 p2.kicker = p2.high_card_sorted_list[0]
@@ -87,7 +87,7 @@ class Game(object):
                 return True
             else:
                 return False
-        elif "u" == p1.hand_type:  # three of a kind
+        elif p1.hand_rank in ["u", "s"]:  # three of a kind
             if stack_level == 1:
                 if p1.pair_sorted_list[0][0] < p2.pair_sorted_list[0][0]:
                     return True
@@ -98,29 +98,6 @@ class Game(object):
             else:
                 idx = stack_level - 2
                 if stack_level > 6:
-                    return "split pot"
-                elif p1.high_card_sorted_list[idx] < p2.high_card_sorted_list[idx]:
-                    p1.kicker = p1.high_card_sorted_list[idx]
-                    p2.kicker = p2.high_card_sorted_list[idx]
-                    return True
-                elif p1.high_card_sorted_list[idx] > p2.high_card_sorted_list[idx]:
-                    p1.kicker = p1.high_card_sorted_list[idx]
-                    p2.kicker = p2.high_card_sorted_list[idx]
-                    return False
-                else:
-                    return self.recursive_high_card_check(p1, p2, stack_level)
-        elif "t" == p1.hand_rank:  # two pair
-            idx = stack_level - 1
-            if stack_level <= 2:
-                if p1.pair_sorted_list[idx][0] < p2.pair_sorted_list[idx][0]:
-                    return True
-                elif p1.pair_sorted_list[idx][0] > p2.pair_sorted_list[idx][0]:
-                    return False
-                else:
-                    return self.recursive_high_card_check(p1, p2, stack_level)
-            else:
-                idx = stack_level - 3
-                if stack_level > 7:
                     return "split pot"
                 elif p1.high_card_sorted_list[idx] < p2.high_card_sorted_list[idx]:
                     p1.kicker = p1.high_card_sorted_list[idx]
@@ -133,16 +110,17 @@ class Game(object):
                 else:
                     return self.recursive_high_card_check(p1, p2, stack_level)
         else:
-            if stack_level == 1:
-                if p1.pair_sorted_list[0][0] < p2.pair_sorted_list[0][0]:
+            idx = stack_level - 1
+            if stack_level <= 2:
+                if p1.pair_sorted_list[idx][0] < p2.pair_sorted_list[idx][0]:
                     return True
-                elif p1.pair_sorted_list[0][0] > p2.pair_sorted_list[0][0]:
+                elif p1.pair_sorted_list[idx][0] > p2.pair_sorted_list[idx][0]:
                     return False
                 else:
                     return self.recursive_high_card_check(p1, p2, stack_level)
             else:
-                idx = stack_level - 2
-                if stack_level > 6:
+                idx = stack_level - 3
+                if stack_level > 7:
                     return "split pot"
                 elif p1.high_card_sorted_list[idx] < p2.high_card_sorted_list[idx]:
                     p1.kicker = p1.high_card_sorted_list[idx]
