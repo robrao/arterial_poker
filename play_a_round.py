@@ -187,7 +187,7 @@ class Game(object):
             hand_value = ['v', label, [], sorted_hand]
         else:
             pairs = Counter(sorted_hand).items()
-            sorted_pairs = sorted(pairs, reverse=True, key=lambda x: x[1])
+            sorted_pairs = sorted(pairs, reverse=True, key=lambda x: (x[1], x[0]))
 
             if sorted_pairs[0][1] == 4:
                 pair = sorted_pairs[0][0]

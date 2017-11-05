@@ -252,5 +252,35 @@ class TestGameMethods(unittest.TestCase):
 
         self.assertEqual(res, False)
 
+    def test_find_hand_rank_high_card(self):
+        game = play_a_round.Game("KH QH JH TH 3D")
+        hand = "9H 12D 6S 7D 14S".split(" ")
+        hand_rank, hand_type, pair_sorted_list, high_card_sorted_list = game.find_hand_rank_and_high_card(hand)
+
+        self.assertEqual(hand_rank, 'r')
+        self.assertEqual(hand_type, 'Ace High')
+        self.assertEqual(pair_sorted_list, [])
+        self.assertEqual(high_card_sorted_list, [14, 12, 9, 7, 6])
+
+    def test_find_hand_rank_pair(self):
+        game = play_a_round.Game("KH QH JH TH 3D")
+        hand = "9H 12D 6S 6D 14S".split(" ")
+        hand_rank, hand_type, pair_sorted_list, high_card_sorted_list = game.find_hand_rank_and_high_card(hand)
+
+        self.assertEqual(hand_rank, 's')
+        self.assertEqual(hand_type, 'A Pair of 6\'s')
+        self.assertEqual(pair_sorted_list, [(6, 2), (14, 1), (12, 1), (9, 1)])
+        self.assertEqual(high_card_sorted_list, [14, 12, 9, 6, 6])
+
+    def test_find_hand_rank_two_pair(self):
+        game = play_a_round.Game("KH QH JH TH 3D")
+        hand = "9H 4D 6S 6D 4S".split(" ")
+        hand_rank, hand_type, pair_sorted_list, high_card_sorted_list = game.find_hand_rank_and_high_card(hand)
+
+        self.assertEqual(hand_rank, 't')
+        self.assertEqual(hand_type, 'Two Pairs: 6\'s and 4\'s')
+        self.assertEqual(pair_sorted_list, [(6, 2), (4, 2), (9, 1)])
+        self.assertEqual(high_card_sorted_list, [9, 6, 6, 4, 4])
+
 if __name__ == '__main__':
     unittest.main()
