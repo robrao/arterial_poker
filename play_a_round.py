@@ -74,7 +74,7 @@ class Game(object):
     def recursive_high_card_check(self, p1, p2, stack_level=0):
         """ Docstring Required """
         stack_level += 1
-        if "v" in p1.hand_type:  # straight
+        if "v" in p1.hand_rank:  # straight
             if p1.high_card_sorted_list[0] < p2.high_card_sorted_list[0]:
                 return True
             elif p1.high_card_sorted_list[0] > p2.high_card_sorted_list[0]:
@@ -91,17 +91,17 @@ class Game(object):
                     return False
 
             return "split pot"
-        elif "x" == p1.hand_type:  # full house
+        elif "x" == p1.hand_rank:  # full house
             if p1.pair_sorted_list[0][0] < p2.pair_sorted_list[0][0]:
                 return True
             else:
                 return False
-        elif "y" == p1.hand_type:  # four of a kind
+        elif "y" == p1.hand_rank:  # four of a kind
             if p1.pair_sorted_list[1][0] < p2.pair_sorted_list[1][0]:
                 return True
             else:
                 return False
-        elif p1.hand_rank in ["u", "s"]:  # three of a kind
+        elif p1.hand_rank in ["u", "s"]:  # three of a kind or a pair
             if stack_level == 1:
                 if p1.pair_sorted_list[0][0] < p2.pair_sorted_list[0][0]:
                     return True
