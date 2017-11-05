@@ -32,7 +32,10 @@ UNIQUE_CARD_COUNT = Counter()
 def validate_cards(*cards):
     all_card_vals = ["A", "K", "Q", "J", "T"] + [str(i) for i in range(2, 10)]
     all_suit_vals = ["H", "D", "S", "C"]
+
     for card in cards:
+        card = card.upper()
+
         if UNIQUE_CARD_COUNT[card] > 0:
             msg = "{} card has been played more than once.".format(card)
             raise ValueError(msg)
