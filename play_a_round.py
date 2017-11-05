@@ -226,7 +226,7 @@ class Game(object):
 
         return hand_value
 
-    def best_hand(self, player):  # Rename to WINNING HAND
+    def best_hand(self, player):
         '''Find best hand it list of possible hands
 
         Assign value to hand_type by creating arbitrary value system.
