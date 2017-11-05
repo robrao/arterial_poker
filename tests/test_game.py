@@ -282,5 +282,24 @@ class TestGameMethods(unittest.TestCase):
         self.assertEqual(pair_sorted_list, [(6, 2), (4, 2), (9, 1)])
         self.assertEqual(high_card_sorted_list, [9, 6, 6, 4, 4])
 
+    def test_find_hand_rank_three_pair(self):
+        game = play_a_round.Game("KH QH JH TH 3D")
+        hand = "9H 4D 6S 4C 4S".split(" ")
+        hand_rank, hand_type, pair_sorted_list, high_card_sorted_list = game.find_hand_rank_and_high_card(hand)
+
+        self.assertEqual(hand_rank, 'u')
+        self.assertEqual(hand_type, 'Three 4\'s')
+        self.assertEqual(pair_sorted_list, [(4, 3), (9, 1), (6, 1)])
+        self.assertEqual(high_card_sorted_list, [9, 6, 4, 4, 4])
+
+    def test_find_hand_rank_straight(self):
+        game = play_a_round.Game("KH QH JH TH 3D")
+        hand = "5H 14D 2S 3C 4S".split(" ")
+        hand_rank, hand_type, pair_sorted_list, high_card_sorted_list = game.find_hand_rank_and_high_card(hand)
+
+        self.assertEqual(hand_rank, 'v')
+        self.assertEqual(hand_type, '5 High Straight')
+        self.assertEqual(high_card_sorted_list, [5, 4, 3, 2, 14])
+
 if __name__ == '__main__':
     unittest.main()

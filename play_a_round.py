@@ -165,6 +165,11 @@ class Game(object):
         flush = hand[0][-1] == hand[1][-1] == hand[2][-1] == hand[3][-1] == hand[4][-1]
         regular_straight = sum([sorted_hand[idx] - val for idx, val in enumerate(sorted_hand[1:])]) == 4
         bicycle_straight = sum([0 if x == sorted_hand[idx] else 1 for idx, x in enumerate([14, 5, 4, 3, 2])]) == 0
+
+        if bicycle_straight:
+            sorted_hand = [x for x in sorted_hand[1:]]
+            sorted_hand.append(14)
+
         straight = regular_straight or bicycle_straight
 
         if straight and flush:
