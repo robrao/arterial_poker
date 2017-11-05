@@ -33,6 +33,25 @@ VALUE_FACE_DICT = {
 UNIQUE_CARD_COUNT = Counter()
 
 
+def validate_cards(*cards):
+    all_card_vals = ["A", "K", "Q", "J", "T"] + [str(i) for i in range(2, 10)]
+    all_suit_vals = ["H", "D", "S", "C"]
+    for card in cards:
+        if UNIQUE_CARD_COUNT[card] > 0:
+            msg = "{} card has been played more than once.".format(card)
+            raise ValueError(msg)
+        else:
+            UNIQUE_CARD_COUNT[card] += 1
+
+        if not card[0] in all_card_vals:
+            msg = "'{}' is not a valid card value".format(card[0])
+            raise ValueError(msg)
+
+        if not card[1] in all_suit_vals:
+            msg = "'{}' is not a valid card suit".format(card[1])
+            raise ValueError(msg)
+
+
 class Game(object):
 
     def __init__(self, board, players):
@@ -42,14 +61,9 @@ class Game(object):
     def __parseBoard__(self, data):
         updated_cards = []
         cards = data.split(" ")
+        validate_cards(*cards)
 
         for card in cards:
-            if UNIQUE_CARD_COUNT[card] > 1:
-                msg = "The same card has been played twice: {}.".format(card)
-                raise ValueError(msg)
-            else:
-                UNIQUE_CARD_COUNT[card] += 1
-
             val = FACE_VALUE_DICT.get(card[0], False)
             if val:
                 card = card.replace(card[0], val)
@@ -330,14 +344,9 @@ class Player(object):
     def __parsePlayerData__(self, data):
         updated_cards = []
         name, card1, card2 = data.split(" ")
+        validate_cards(card1, card2)
 
         for card in [card1, card2]:
-            if UNIQUE_CARD_COUNT[card] > 1:
-                msg = "The same card has been played twice: {}.".format(card)
-                raise ValueError(msg)
-            else:
-                UNIQUE_CARD_COUNT[card] += 1
-
             val = FACE_VALUE_DICT.get(card[0], False)
             if val:
                 card = card.replace(card[0], val)
@@ -359,11 +368,11 @@ def main():
         print "** It takes atleast two players to play. **"
         return
 
-    #TESTING board = raw_input("Enter the board: ").strip().upper()
+    # board = raw_input("Enter the board: ").strip().upper()
 
     number_of_players = "5"
-    board = "6H 3D 4S 9H JH"
-    player_inputs = ["Mike 9S 2D", "Rob 5H JC", "Bob 2C 2S", "Buns 7D 8C", "Gisele 9D 10H"]
+    board = "QD 1D 4S 9H JH"
+    player_inputs = ["Mike 9S 2D", "Rob 5H JC", "Bob 2C 2S", "Buns 7D 8C", "Gisele 9D TH"]
 
     players = []
     try:
