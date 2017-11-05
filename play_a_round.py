@@ -5,12 +5,8 @@ from collections import Counter
 
 '''
 NOTES:
-    - a lot input validation required
-        --> no card values that are not in deck
-        --> no card suits that are not in deck
     - function docstring
-    - CATCH RAISED EXCEPTIONS in main, PRINT, AND EXIT GRACEFULLY
-    - README.md?
+    - README.md
     - Tests
 '''
 
