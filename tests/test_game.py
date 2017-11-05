@@ -65,6 +65,21 @@ class TestGameMethods(unittest.TestCase):
 
         self.assertEqual(res, "split pot")
 
+    def test_recursive_high_card_check_pair_high(self):
+        game = play_a_round.Game("QH 2D KS 3C JD")
+        p1 = play_a_round.Player("test1 JH 8S")
+        p2 = play_a_round.Player("test2 JS 6C")
+        p1.hand_rank = 's'
+        p2.hand_rank = 's'
+        p1.high_card_sorted_list = [13, 12, 11, 11, 8]
+        p2.high_card_sorted_list = [13, 12, 11, 11, 6]
+        p1.pair_sorted_list = [(11, 2), (13, 1), (12, 1), (8, 1)]
+        p2.pair_sorted_list = [(11, 2), (13, 1), (12, 1), (6, 1)]
+
+        res = game.recursive_high_card_check(p1, p2)
+
+        self.assertEqual(res, False)
+
     def test_recursive_high_card_check_twopair(self):
         game = play_a_round.Game("QH 2D KS 3C JD")
         p1 = play_a_round.Player("test1 2H QS")
@@ -94,6 +109,66 @@ class TestGameMethods(unittest.TestCase):
         res = game.recursive_high_card_check(p1, p2)
 
         self.assertEqual(res, "split pot")
+
+    def test_recursive_high_card_check_twopair_high(self):
+        game = play_a_round.Game("QH 2D 4S JC JD")
+        p1 = play_a_round.Player("test1 7H QS")
+        p2 = play_a_round.Player("test2 8C QC")
+        p1.hand_rank = 't'
+        p2.hand_rank = 't'
+        p1.high_card_sorted_list = [12, 12, 11, 11, 7]
+        p2.high_card_sorted_list = [12, 12, 11, 11, 8]
+        p1.pair_sorted_list = [(12, 2), (11, 2), (7, 1)]
+        p2.pair_sorted_list = [(12, 2), (11, 2), (8, 1)]
+
+        res = game.recursive_high_card_check(p1, p2)
+
+        self.assertEqual(res, True)
+
+    def test_recursive_high_card_check_trips(self):
+        game = play_a_round.Game("QH 2D KS 3C 3D")
+        p1 = play_a_round.Player("test1 2H 2S")
+        p2 = play_a_round.Player("test2 3H JC")
+        p1.hand_rank = 't'
+        p2.hand_rank = 't'
+        p1.high_card_sorted_list = [13, 12, 2, 2, 2]
+        p2.high_card_sorted_list = [13, 12, 3, 3, 3]
+        p1.pair_sorted_list = [(2, 3), (13, 1), (12, 1)]
+        p2.pair_sorted_list = [(3, 3), (13, 2), (12, 1)]
+
+        res = game.recursive_high_card_check(p1, p2)
+
+        self.assertEqual(res, True)
+
+    def test_recursive_high_card_check_trips_split(self):
+        game = play_a_round.Game("QH 2D KS 3C 3D")
+        p1 = play_a_round.Player("test1 3S TS")
+        p2 = play_a_round.Player("test2 3H JC")
+        p1.hand_rank = 't'
+        p2.hand_rank = 't'
+        p1.high_card_sorted_list = [13, 12, 3, 3, 3]
+        p2.high_card_sorted_list = [13, 12, 3, 3, 3]
+        p1.pair_sorted_list = [(3, 3), (13, 1), (12, 1)]
+        p2.pair_sorted_list = [(3, 3), (13, 2), (12, 1)]
+
+        res = game.recursive_high_card_check(p1, p2)
+
+        self.assertEqual(res, "split pot")
+
+    def test_recursive_high_card_check_trips_high(self):
+        game = play_a_round.Game("9H 2D KS AC AD")
+        p1 = play_a_round.Player("test1 AS TS")
+        p2 = play_a_round.Player("test2 AH JC")
+        p1.hand_rank = 't'
+        p2.hand_rank = 't'
+        p1.high_card_sorted_list = [14, 14, 14, 13, 10]
+        p2.high_card_sorted_list = [14, 14, 14, 13, 11]
+        p1.pair_sorted_list = [(14, 3), (13, 1), (10, 1)]
+        p2.pair_sorted_list = [(14, 3), (13, 1), (11, 1)]
+
+        res = game.recursive_high_card_check(p1, p2)
+
+        self.assertEqual(res, True)
 
 if __name__ == '__main__':
     unittest.main()
