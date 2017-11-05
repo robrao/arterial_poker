@@ -196,5 +196,33 @@ class TestGameMethods(unittest.TestCase):
 
         self.assertEqual(res, "split pot")
 
+    def test_recursive_high_card_check_flush(self):
+        game = play_a_round.Game("QH 2D KD 3C 8D")
+        p1 = play_a_round.Player("test1 7D 6S")
+        p2 = play_a_round.Player("test2 6D 6C")
+        p1.hand_rank = 'w'
+        p2.hand_rank = 'w'
+        p1.high_card_sorted_list = [13, 12, 8, 7, 2]
+        p2.high_card_sorted_list = [13, 12, 8, 8, 2]
+
+        res = game.recursive_high_card_check(p1, p2)
+
+        self.assertEqual(res, True)
+
+    def test_recursive_high_card_check_full(self):
+        game = play_a_round.Game("6H 7S 7C 3C 3D")
+        p1 = play_a_round.Player("test1 7D 6S")
+        p2 = play_a_round.Player("test2 6D 6C")
+        p1.hand_rank = 'x'
+        p2.hand_rank = 'x'
+        p1.high_card_sorted_list = [7, 7, 7, 3, 3]
+        p2.high_card_sorted_list = [6, 6, 6, 3, 3]
+        p1.pair_sorted_list = [(7, 3), (3, 2)]
+        p2.pair_sorted_list = [(6, 3), (3, 2)]
+
+        res = game.recursive_high_card_check(p1, p2)
+
+        self.assertEqual(res, False)
+
 if __name__ == '__main__':
     unittest.main()
