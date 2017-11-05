@@ -74,7 +74,7 @@ class Game(object):
     def recursive_high_card_check(self, p1, p2, stack_level=0):
         """ Docstring Required """
         stack_level += 1
-        if "v" in p1.hand_rank:  # straight
+        if p1.hand_rank in ["v", "z"]:  # straight
             if p1.high_card_sorted_list[0] < p2.high_card_sorted_list[0]:
                 return True
             elif p1.high_card_sorted_list[0] > p2.high_card_sorted_list[0]:

@@ -224,5 +224,33 @@ class TestGameMethods(unittest.TestCase):
 
         self.assertEqual(res, False)
 
+    def test_recursive_high_card_check_four(self):
+        game = play_a_round.Game("6H 7S 7C 6C 3D")
+        p1 = play_a_round.Player("test1 7D 7H")
+        p2 = play_a_round.Player("test2 6D 6S")
+        p1.hand_rank = 'y'
+        p2.hand_rank = 'y'
+        p1.high_card_sorted_list = [7, 7, 7, 7, 3]
+        p2.high_card_sorted_list = [6, 6, 6, 6, 3]
+        p1.pair_sorted_list = [(7, 4), (3, 1)]
+        p2.pair_sorted_list = [(6, 4), (3, 1)]
+
+        res = game.recursive_high_card_check(p1, p2)
+
+        self.assertEqual(res, False)
+
+    def test_recursive_high_card_check_straight_flush(self):
+        game = play_a_round.Game("KH QH JH TH 3D")
+        p1 = play_a_round.Player("test1 7D AH")
+        p2 = play_a_round.Player("test2 9H 6S")
+        p1.hand_rank = 'z'
+        p2.hand_rank = 'z'
+        p1.high_card_sorted_list = [14, 13, 12, 11, 10]
+        p2.high_card_sorted_list = [13, 12, 11, 10, 9]
+
+        res = game.recursive_high_card_check(p1, p2)
+
+        self.assertEqual(res, False)
+
 if __name__ == '__main__':
     unittest.main()
