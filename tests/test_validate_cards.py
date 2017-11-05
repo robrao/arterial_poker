@@ -9,7 +9,7 @@ RANKS = '23456789TJQKA'
 DECK = tuple(''.join(card) for card in itertools.product(RANKS, SUITS))
 
 
-class TestStringMethods(unittest.TestCase):
+class TestValidateCardsMethods(unittest.TestCase):
 
     def setUp(self):
         play_a_round.UNIQUE_CARD_COUNT = Counter()

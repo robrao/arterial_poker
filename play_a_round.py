@@ -53,9 +53,8 @@ def validate_cards(*cards):
 
 class Game(object):
 
-    def __init__(self, board, players):
+    def __init__(self, board):
         self.board = self.__parseBoard__(board)
-        self.players = players
 
     def __parseBoard__(self, data):
         updated_cards = []
@@ -370,7 +369,7 @@ def main():
     # board = raw_input("Enter the board: ").strip().upper()
 
     number_of_players = "5"
-    board = "QD 1D 4S 9H JH"
+    board = "QD 2H 4S 9H JH"
     player_inputs = ["Mike 9S 2D", "Rob 5H JC", "Bob 2C 2S", "Buns 7D 8C", "Gisele 9D TH"]
 
     players = []
@@ -380,7 +379,7 @@ def main():
             player_input = player_inputs[i]
             players.append(Player(player_input))
 
-        game = Game(board, players)
+        game = Game(board)
     except Exception as err:
         print err
         return
