@@ -163,7 +163,7 @@ class Game(object):
         sorted_hand = sorted(no_suit_hand,  reverse=True)
 
         flush = hand[0][-1] == hand[1][-1] == hand[2][-1] == hand[3][-1] == hand[4][-1]
-        regular_straight = sum([sorted_hand[idx] - val for idx, val in enumerate(sorted_hand[1:])]) == 4
+        regular_straight = sum([(sorted_hand[idx] - val) == 1 for idx, val in enumerate(sorted_hand[1:])]) == 4
         bicycle_straight = sum([0 if x == sorted_hand[idx] else 1 for idx, x in enumerate([14, 5, 4, 3, 2])]) == 0
 
         if bicycle_straight:
@@ -198,14 +198,14 @@ class Game(object):
                 pair = sorted_pairs[0][0]
                 face_val = VALUE_FACE_DICT.get(pair, pair)
                 label = "Four {}'s".format(face_val)
-                hand_value = ['y', label, sorted_pairs]
+                hand_value = ['y', label, sorted_pairs, sorted_hand]
             elif sorted_pairs[0][1] == 3 and sorted_pairs[1][1] == 2:
                 pair1 = sorted_pairs[0][0]
                 pair2 = sorted_pairs[1][0]
                 face_val1 = VALUE_FACE_DICT.get(pair1, pair1)
                 face_val2 = VALUE_FACE_DICT.get(pair2, pair2)
-                label = "Full House: {}'s over {}".format(face_val1, face_val2)
-                hand_value = ['x', label, sorted_pairs]
+                label = "Full House: {}'s over {}'s".format(face_val1, face_val2)
+                hand_value = ['x', label, sorted_pairs, sorted_hand]
             elif sorted_pairs[0][1] == 3:
                 pair = sorted_pairs[0][0]
                 face_val = VALUE_FACE_DICT.get(pair, pair)
