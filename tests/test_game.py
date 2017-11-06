@@ -9,6 +9,14 @@ class TestGameMethods(unittest.TestCase):
     def setUp(self):
         play_a_round.UNIQUE_CARD_COUNT = Counter()
 
+    def test_parseBoard_too_much_input(self):
+        with self.assertRaises(ValueError):
+            play_a_round.Game("ab cd ef j l p q")
+
+    def test_parseBoard_too_little_input(self):
+        with self.assertRaises(ValueError):
+            play_a_round.Game("ab cd ef")
+
     def test_recursive_high_card_check_high(self):
         game = play_a_round.Game("QH 2D KS 3C JD")
         p1 = play_a_round.Player("test1 9H 6S")

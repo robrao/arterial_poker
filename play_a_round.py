@@ -27,6 +27,7 @@ VALUE_FACE_DICT = {
         }
 
 UNIQUE_CARD_COUNT = Counter()
+UNIQUE_PLAYER_NAMES = Counter()
 
 
 def validate_cards(*cards):
@@ -344,6 +345,13 @@ class Player(object):
     def __str__(self):
         return "{} {}".format(self.name, self.hand_type)
 
+    def __validate_player_name__(self, name):
+        if UNIQUE_PLAYER_NAMES[name] > 0:
+            msg = "** Each player must have a unique name to prevent confusion.\n{} has been used more than once **".format(name)
+            raise ValueError(msg)
+        else:
+            UNIQUE_PLAYER_NAMES[name] += 1
+
     def __parsePlayerData__(self, data):
         updated_cards = []
 
@@ -353,6 +361,7 @@ class Player(object):
             msg = "** Invalid data entered for a player. **"
             raise ValueError(msg)
 
+        self.__validate_player_name__(name)
         validate_cards(card1, card2)
 
         for card in [card1, card2]:
