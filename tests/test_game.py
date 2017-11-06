@@ -422,5 +422,35 @@ class TestGameMethods(unittest.TestCase):
         self.assertEqual(player.pair_sorted_list, [(7, 3), (12, 2)])
         self.assertEqual(player.high_card_sorted_list, [12, 12, 7, 7, 7])
 
+    def test_best_hand_quads(self):
+        game = play_a_round.Game("QS QC 7S 7H JD")
+        player = play_a_round.Player("test1 7D 7C")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 'y')
+        self.assertEqual(player.hand_type, 'Four 7\'s')
+        self.assertEqual(player.pair_sorted_list, [(7, 4), (12, 1)])
+        self.assertEqual(player.high_card_sorted_list, [12, 7, 7, 7, 7])
+
+    def test_best_hand_straight_flush(self):
+        game = play_a_round.Game("QS JS 7S 7H TS")
+        player = play_a_round.Player("test1 9S 8S")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 'z')
+        self.assertEqual(player.hand_type, 'Queen High Straight Flush')
+        self.assertEqual(player.pair_sorted_list, [])
+        self.assertEqual(player.high_card_sorted_list, [12, 11, 10, 9, 8])
+
+    def test_best_hand_royal_flush(self):
+        game = play_a_round.Game("QS JS 7S 7H TS")
+        player = play_a_round.Player("test1 KS AS")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 'z')
+        self.assertEqual(player.hand_type, 'A Royal Flush')
+        self.assertEqual(player.pair_sorted_list, [])
+        self.assertEqual(player.high_card_sorted_list, [14, 13, 12, 11, 10])
+
 if __name__ == '__main__':
     unittest.main()
