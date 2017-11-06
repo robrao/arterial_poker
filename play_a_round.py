@@ -59,6 +59,11 @@ class Game(object):
     def __parseBoard__(self, data):
         updated_cards = []
         cards = data.split(" ")
+
+        if not len(cards) == 5:
+            msg = "** Expecting 5 cards, but got {}. **".format(len(cards))
+            raise ValueError(msg)
+
         validate_cards(*cards)
 
         for card in cards:
@@ -66,8 +71,6 @@ class Game(object):
             if val:
                 card = card.replace(card[0], val)
             updated_cards.append(card)
-            # validate cards are as expected len 2 one char
-            # one string, or two string means 10 or up
 
         return updated_cards
 
@@ -343,7 +346,13 @@ class Player(object):
 
     def __parsePlayerData__(self, data):
         updated_cards = []
-        name, card1, card2 = data.split(" ")
+
+        try:
+            name, card1, card2 = data.split(" ")
+        except Exception as err:
+            msg = "** Invalid data entered for a player. **"
+            raise ValueError(msg)
+
         validate_cards(card1, card2)
 
         for card in [card1, card2]:
@@ -351,8 +360,6 @@ class Player(object):
             if val:
                 card = card.replace(card[0], val)
             updated_cards.append(card)
-            # validate cards are as expected len 2 one char
-            # one string, or two string means 10 or up
 
         return name, updated_cards[0], updated_cards[1]
 
@@ -368,17 +375,12 @@ def main():
         print "** It takes atleast two players to play. **"
         return
 
-    # board = raw_input("Enter the board: ").strip().upper()
-
-    number_of_players = "5"
-    board = "QD 2H 4S 9H JH"
-    player_inputs = ["Mike 9S 2D", "Rob 5H JC", "Bob 2C 2S", "Buns 7D 8C", "Gisele 9D TH"]
+    board = raw_input("Enter the board: ").strip().upper()
 
     players = []
     try:
         for i in range(int(number_of_players)):
-            # player_input = raw_input("Player {}: ".format(i+1)).strip().upper()
-            player_input = player_inputs[i]
+            player_input = raw_input("Player {}: ".format(i+1)).strip().upper()
             players.append(Player(player_input))
 
         game = Game(board)
@@ -386,13 +388,9 @@ def main():
         print err
         return
 
-    # each player goes over board and finds best hand
-    # https://docs.python.org/2/library/itertools.html#itertools.combinations
     for player in players:
         game.best_hand(player)
 
-    # for player in players:
-        # print player
     winner_list = game.find_winner(players)
     game.display_results(winner_list)
 
