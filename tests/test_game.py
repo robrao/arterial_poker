@@ -8,13 +8,14 @@ class TestGameMethods(unittest.TestCase):
 
     def setUp(self):
         play_a_round.UNIQUE_CARD_COUNT = Counter()
+        play_a_round.UNIQUE_PLAYER_NAMES = Counter()
 
-    def test_parseBoard_too_much_input(self):
-        with self.assertRaises(ValueError):
+    def test_parse_community_too_much_input(self):
+        with self.assertRaises(AssertionError):
             play_a_round.Game("ab cd ef j l p q")
 
-    def test_parseBoard_too_little_input(self):
-        with self.assertRaises(ValueError):
+    def test_parse_community_too_little_input(self):
+        with self.assertRaises(AssertionError):
             play_a_round.Game("ab cd ef")
 
     def test_recursive_high_card_check_high(self):

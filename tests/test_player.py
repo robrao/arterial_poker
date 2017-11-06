@@ -8,6 +8,7 @@ class TestPlayerMethods(unittest.TestCase):
 
     def setUp(self):
         play_a_round.UNIQUE_CARD_COUNT = Counter()
+        play_a_round.UNIQUE_PLAYER_NAMES = Counter()
 
     def test_parseBoard_too_much_input(self):
         with self.assertRaises(ValueError):

@@ -4,13 +4,11 @@
 
 To play simply pull the repo and get started:
 
-    python play_a_round.py
+    echo "KS AD 3H 7C TD\nJohn 9H 7S\nSam AC KH\nBecky JD QC" | python play_a_round.py
 
 To run tests:
 
-    python -m unittest tests.test_validate_cards
-    python -m unittest tests.test_game
-    python -m unittest tests.test_player
+    python run_tests.py
 
 _It's too rich for my blood..._
 

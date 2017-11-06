@@ -1,3 +1,4 @@
+import fileinput
 import itertools
 
 from copy import deepcopy
@@ -51,16 +52,14 @@ class Game(object):
     """ Handles all the game logic, and holds all cards on the board """
 
     def __init__(self, board):
-        self.board = self.__parseBoard__(board)
+        self.board = self._parse_community_cards_(board)
 
-    def __parseBoard__(self, data):
+    def _parse_community_cards_(self, data):
         """ Ensure information entered for board is valid """
         updated_cards = []
         cards = data.split(" ")
 
-        if not len(cards) == 5:
-            msg = "** Expecting 5 cards, but got {}. **".format(len(cards))
-            raise ValueError(msg)
+        assert len(cards) == 5, "** Expecting 5 cards, but got {}. **".format(len(cards))
 
         validate_cards(*cards)
 
@@ -373,7 +372,7 @@ class Player(object):
     """ Maintains player logic and hand value """
 
     def __init__(self, data):
-        name, card1, card2 = self.__parsePlayerData__(data)
+        name, card1, card2 = self._parse_player_data_(data)
         self.name = name
         self.hand = [card1, card2]
         self.hand_type = ""
@@ -386,7 +385,7 @@ class Player(object):
     def __str__(self):
         return "{} {}".format(self.name, self.hand_type)
 
-    def __validate_player_name__(self, name):
+    def _validate_player_name_(self, name):
         """ Ensure each player has a unique name to prevent confusion. """
         if UNIQUE_PLAYER_NAMES[name] > 0:
             msg = "** Each player must have a unique name to prevent confusion.\n{} has been used more than once **".format(name)
@@ -394,7 +393,7 @@ class Player(object):
         else:
             UNIQUE_PLAYER_NAMES[name] += 1
 
-    def __parsePlayerData__(self, data):
+    def _parse_player_data_(self, data):
         """ Parse all Player input data """
         updated_cards = []
 
@@ -404,7 +403,7 @@ class Player(object):
             msg = "** Invalid data entered for a player. **"
             raise ValueError(msg)
 
-        self.__validate_player_name__(name)
+        self._validate_player_name_(name)
         validate_cards(card1, card2)
 
         for card in [card1, card2]:
@@ -416,24 +415,13 @@ class Player(object):
         return name, updated_cards[0], updated_cards[1]
 
 
-def main():
-    try:
-        number_of_players = int(raw_input("How many players do we have? ").strip())
-    except ValueError as err:
-        print "** Ensure that the input was a number **"
-        return
-
-    if number_of_players < 2:
-        print "** It takes atleast two players to play. **"
-        return
-
-    board = raw_input("Enter the board: ").strip().upper()
+def main(game_data):
+    board = game_data[0]
 
     players = []
     try:
-        for i in range(int(number_of_players)):
-            player_input = raw_input("Player {}: ".format(i+1)).strip().upper()
-            players.append(Player(player_input))
+        for player_info in game_data[1:]:
+            players.append(Player(player_info))
 
         game = Game(board)
     except Exception as err:
@@ -447,4 +435,10 @@ def main():
     game.display_results(winner_list)
 
 if __name__ == "__main__":
-    main()
+    game_data = []
+
+    for line in fileinput.input():
+        line = line.strip()
+        game_data.append(line)
+
+    main(game_data)
