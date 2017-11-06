@@ -3,11 +3,6 @@ import itertools
 from copy import deepcopy
 from collections import Counter
 
-'''
-NOTES:
-    - function docstring
-    - README.md
-'''
 
 FACE_VALUE_DICT = {
         'A': "14",
@@ -81,7 +76,15 @@ class Game(object):
         """ Compares hands that have a matching rank
 
         Start comparison from most valuable card to least valuable.
-        Will return "split pot" if there is a draw.
+
+        input:
+            p1 = Player
+            p2 = Player
+
+        output:
+            p1 < p2 = True
+            p1 > p2 = False
+            p1 == p2 = "split pot"
         """
         stack_level += 1
         if p1.hand_rank in ["v", "z"]:  # straight
@@ -246,16 +249,20 @@ class Game(object):
         return hand_value
 
     def best_hand(self, player):
-        '''Find best hand it list of possible hands
+        """Find best hand it list of possible hands
 
-        Assign value to hand_type by creating arbitrary value system.
-        straight flush most points, and then bonus for high card. Need
-        to figure out this bonus for high card more specifically...
+        Update Player with best hand and associated values
+        based on all possible hands s/he can play.
 
-        Add proper doc string!!!
+        input:
+            Player
 
-        rank, sorted_hand; 'z' is the highest rank and 'a' is the lowest.
-        '''
+        output:
+            Player.hand_rank
+            Player.hand_type
+            Player.pair_sorted_list
+            Player.high_card_sorted_list
+        """
 
         if player.hand_rank == "":
             player.hand_rank = "a"
@@ -280,7 +287,17 @@ class Game(object):
             player.kicker = None
 
     def find_winner(self, players):
-        """ Using merge sort to find winner """
+        """ Using merge sort to find winner
+
+        Recusively iterate through all players and order
+        them by most value hand to least valuable.
+
+        input:
+            players = [Player1, ..., Player5]
+
+        output:
+            ordered_list = [Player3, Player5, ...]
+        """
         if len(players) == 1:
             return players
         else:
@@ -324,7 +341,20 @@ class Game(object):
         return ordered_list
 
     def display_results(self, winner_list):
-        # check for split pot, and amount how many
+        """ Display results of the game
+
+        List players from first to last place. If there is a
+        draw the players will be listed as finishing in the
+        same position.
+
+        eg.
+
+        1 Dave A Royal Flush
+        2 Rob Two Pairs: 7's and 3's
+        2 Mike Two pairs: 7's and 3's
+        3 Greg Ace High
+
+        """
         position = 1
         for w in winner_list:
             output = "{} {} {}".format(position, w.name, w.hand_type)
@@ -340,6 +370,7 @@ class Game(object):
 
 
 class Player(object):
+    """ Maintains player logic and hand value """
 
     def __init__(self, data):
         name, card1, card2 = self.__parsePlayerData__(data)
@@ -356,6 +387,7 @@ class Player(object):
         return "{} {}".format(self.name, self.hand_type)
 
     def __validate_player_name__(self, name):
+        """ Ensure each player has a unique name to prevent confusion. """
         if UNIQUE_PLAYER_NAMES[name] > 0:
             msg = "** Each player must have a unique name to prevent confusion.\n{} has been used more than once **".format(name)
             raise ValueError(msg)
@@ -363,6 +395,7 @@ class Player(object):
             UNIQUE_PLAYER_NAMES[name] += 1
 
     def __parsePlayerData__(self, data):
+        """ Parse all Player input data """
         updated_cards = []
 
         try:
