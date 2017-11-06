@@ -372,5 +372,55 @@ class TestGameMethods(unittest.TestCase):
         self.assertEqual(player.pair_sorted_list, [(5, 2), (11, 1), (7, 1), (4, 1)])
         self.assertEqual(player.high_card_sorted_list, [11, 7, 5, 5, 4])
 
+    def test_best_hand_two_pair(self):
+        game = play_a_round.Game("4H 3S 7S 5C JD")
+        player = play_a_round.Player("test1 5H 4C")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 't')
+        self.assertEqual(player.hand_type, 'Two Pairs: 5\'s and 4\'s')
+        self.assertEqual(player.pair_sorted_list, [(5, 2), (4, 2), (11, 1)])
+        self.assertEqual(player.high_card_sorted_list, [11, 5, 5, 4, 4])
+
+    def test_best_hand_trips(self):
+        game = play_a_round.Game("5S 3S 7S 5C JD")
+        player = play_a_round.Player("test1 5H 4C")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 'u')
+        self.assertEqual(player.hand_type, 'Three 5\'s')
+        self.assertEqual(player.pair_sorted_list, [(5, 3), (11, 1), (7, 1)])
+        self.assertEqual(player.high_card_sorted_list, [11, 7, 5, 5, 5])
+
+    def test_best_hand_straight(self):
+        game = play_a_round.Game("KS 3S 7S 5C JD")
+        player = play_a_round.Player("test1 6H 4C")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 'v')
+        self.assertEqual(player.hand_type, '7 High Straight')
+        self.assertEqual(player.pair_sorted_list, [])
+        self.assertEqual(player.high_card_sorted_list, [7, 6, 5, 4, 3])
+
+    def test_best_hand_flush(self):
+        game = play_a_round.Game("KS QS 7S 5S JD")
+        player = play_a_round.Player("test1 4S 8S")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 'w')
+        self.assertEqual(player.hand_type, 'King High Flush')
+        self.assertEqual(player.pair_sorted_list, [])
+        self.assertEqual(player.high_card_sorted_list, [13, 12, 8, 7, 5])
+
+    def test_best_hand_full_house(self):
+        game = play_a_round.Game("QS QC 7S 5S JD")
+        player = play_a_round.Player("test1 7D 7C")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 'x')
+        self.assertEqual(player.hand_type, 'Full House: 7\'s over Queen\'s')
+        self.assertEqual(player.pair_sorted_list, [(7, 3), (12, 2)])
+        self.assertEqual(player.high_card_sorted_list, [12, 12, 7, 7, 7])
+
 if __name__ == '__main__':
     unittest.main()
