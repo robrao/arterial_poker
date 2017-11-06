@@ -7,7 +7,6 @@ from collections import Counter
 NOTES:
     - function docstring
     - README.md
-    - Tests
 '''
 
 FACE_VALUE_DICT = {
@@ -31,6 +30,7 @@ UNIQUE_PLAYER_NAMES = Counter()
 
 
 def validate_cards(*cards):
+    """ Ensure that card inputs are unique and valid """
     all_card_vals = ["A", "K", "Q", "J", "T"] + [str(i) for i in range(2, 10)]
     all_suit_vals = ["H", "D", "S", "C"]
 
@@ -53,11 +53,13 @@ def validate_cards(*cards):
 
 
 class Game(object):
+    """ Handles all the game logic, and holds all cards on the board """
 
     def __init__(self, board):
         self.board = self.__parseBoard__(board)
 
     def __parseBoard__(self, data):
+        """ Ensure information entered for board is valid """
         updated_cards = []
         cards = data.split(" ")
 
@@ -76,7 +78,11 @@ class Game(object):
         return updated_cards
 
     def recursive_high_card_check(self, p1, p2, stack_level=0):
-        """ Docstring Required """
+        """ Compares hands that have a matching rank
+
+        Start comparison from most valuable card to least valuable.
+        Will return "split pot" if there is a draw.
+        """
         stack_level += 1
         if p1.hand_rank in ["v", "z"]:  # straight
             if p1.high_card_sorted_list[0] < p2.high_card_sorted_list[0]:
@@ -127,7 +133,7 @@ class Game(object):
                     return False
                 else:
                     return self.recursive_high_card_check(p1, p2, stack_level)
-        else:
+        else:  # two pair
             idx = stack_level - 1
             if stack_level <= 2:
                 if p1.pair_sorted_list[idx][0] < p2.pair_sorted_list[idx][0]:
@@ -155,12 +161,16 @@ class Game(object):
         """Discover hand type and return rank and high card
 
         The rank of a hand is given by a letter. 'z' being the
-        highest and 'a' being the lowest. Depending on the hand
-        rank, one or two lists will be returned along with the
-        rank.
+        highest and 'a' being the lowest. Two lists will be
+        returned along side the rank and label for the hand. One
+        list will be a list of sorted pairs, if there are any,
+        and a list of cards sorted by descending value.
 
-        eg. if the hand is "Two Pair" it will have a list sorting
-        the pairs by value and a list sorting all cards by value.
+        input:
+            hand = ['5H', '6D', '5C', '7C', '6H']
+
+        output:
+            ['t', "Two Pairs: 6's and 5's", [(6, 2), (5, 2), (7, 1)], [7, 6, 6, 5, 5]
 
         """
         no_suit_hand = [int(x[:-1]) for x in hand]
