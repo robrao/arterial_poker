@@ -266,10 +266,7 @@ class Game(object):
             player.kicker = None
 
     def find_winner(self, players):
-        """Implementing merge sort to find winner
-
-        If know at the top of the stack can check if the pot is split and amoungst who
-        """
+        """ Using merge sort to find winner """
         if len(players) == 1:
             return players
         else:

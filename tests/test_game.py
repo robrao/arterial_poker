@@ -452,5 +452,31 @@ class TestGameMethods(unittest.TestCase):
         self.assertEqual(player.pair_sorted_list, [])
         self.assertEqual(player.high_card_sorted_list, [14, 13, 12, 11, 10])
 
+    def test_find_winner(self):
+        game = play_a_round.Game("QS JS 7S 7H TS")
+        p1 = play_a_round.Player("test1 6S AS")
+        p2 = play_a_round.Player("test2 7D 2S")
+        p3 = play_a_round.Player("test3 8S 3S")
+        p4 = play_a_round.Player("test4 9D 4S")
+        p5 = play_a_round.Player("test5 TD 5S")
+        p2.pair_sorted_list = [(3, 2), (2, 2)]
+        p3.pair_sorted_list = [(3, 2), (2, 2)]
+        p4.pair_sorted_list = [(4, 2), (2, 2)]
+        p2.high_card_sorted_list = [6, 5, 5, 2, 2]
+        p3.high_card_sorted_list = [6, 5, 4, 2, 2]
+        p1.hand_rank = 'r'
+        p2.hand_rank = 't'
+        p3.hand_rank = 't'
+        p4.hand_rank = 't'
+        p5.hand_rank = 'x'
+
+        winner_list = game.find_winner([p1, p2, p3, p4, p5])
+
+        self.assertEqual(winner_list[0].name, "test5")
+        self.assertEqual(winner_list[1].name, "test4")
+        self.assertEqual(winner_list[2].name, "test2")
+        self.assertEqual(winner_list[3].name, "test3")
+        self.assertEqual(winner_list[4].name, "test1")
+
 if __name__ == '__main__':
     unittest.main()
