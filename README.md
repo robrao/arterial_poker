@@ -6,9 +6,11 @@ To play simply pull the repo and get started:
 
     python play_a_round.py
 
-To run all tests:
+To run tests:
 
-    python -m unittest tests
+    python -m unittest tests.test_validate_cards
+    python -m unittest tests.test_game
+    python -m unittest tests.test_player
 
 _It's too rich for my blood..._
 
