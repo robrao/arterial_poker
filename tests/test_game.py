@@ -352,5 +352,25 @@ class TestGameMethods(unittest.TestCase):
         self.assertEqual(pair_sorted_list, [])
         self.assertEqual(high_card_sorted_list, [14, 13, 12, 11, 10])
 
+    def test_best_hand_high_card(self):
+        game = play_a_round.Game("4H 3S 7S 5H 2D")
+        player = play_a_round.Player("test1 9H JC")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 'r')
+        self.assertEqual(player.hand_type, 'Jack High')
+        self.assertEqual(player.pair_sorted_list, [])
+        self.assertEqual(player.high_card_sorted_list, [11, 9, 7, 5, 4])
+
+    def test_best_hand_pair(self):
+        game = play_a_round.Game("4H 3S 7S 5C 2D")
+        player = play_a_round.Player("test1 5H JC")
+        game.best_hand(player)
+
+        self.assertEqual(player.hand_rank, 's')
+        self.assertEqual(player.hand_type, 'A Pair of 5\'s')
+        self.assertEqual(player.pair_sorted_list, [(5, 2), (11, 1), (7, 1), (4, 1)])
+        self.assertEqual(player.high_card_sorted_list, [11, 7, 5, 5, 4])
+
 if __name__ == '__main__':
     unittest.main()
