@@ -322,5 +322,35 @@ class TestGameMethods(unittest.TestCase):
         self.assertEqual(pair_sorted_list, [(3, 3), (7, 2)])
         self.assertEqual(high_card_sorted_list, [7, 7, 3, 3, 3])
 
+    def test_find_hand_rank_four_pair(self):
+        game = play_a_round.Game("KH QH JH TH 3D")
+        hand = "7D 3H 3C 3S 3D".split(" ")
+        hand_rank, hand_type, pair_sorted_list, high_card_sorted_list = game.find_hand_rank_and_high_card(hand)
+
+        self.assertEqual(hand_rank, 'y')
+        self.assertEqual(hand_type, 'Four 3\'s')
+        self.assertEqual(pair_sorted_list, [(3, 4), (7, 1)])
+        self.assertEqual(high_card_sorted_list, [7, 3, 3, 3, 3])
+
+    def test_find_hand_rank_straight_flush(self):
+        game = play_a_round.Game("KH QH JH TH 3D")
+        hand = "8H 7H 6H 5H 4H".split(" ")
+        hand_rank, hand_type, pair_sorted_list, high_card_sorted_list = game.find_hand_rank_and_high_card(hand)
+
+        self.assertEqual(hand_rank, 'z')
+        self.assertEqual(hand_type, '8 High Straight Flush')
+        self.assertEqual(pair_sorted_list, [])
+        self.assertEqual(high_card_sorted_list, [8, 7, 6, 5, 4])
+
+    def test_find_hand_rank_royal_flush(self):
+        game = play_a_round.Game("KH QH JH TH 3D")
+        hand = "14H 13H 12H 11H 10H".split(" ")
+        hand_rank, hand_type, pair_sorted_list, high_card_sorted_list = game.find_hand_rank_and_high_card(hand)
+
+        self.assertEqual(hand_rank, 'z')
+        self.assertEqual(hand_type, 'A Royal Flush')
+        self.assertEqual(pair_sorted_list, [])
+        self.assertEqual(high_card_sorted_list, [14, 13, 12, 11, 10])
+
 if __name__ == '__main__':
     unittest.main()
